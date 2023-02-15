@@ -3,6 +3,63 @@ const express = require('express');
 // variable that defines the server
 let app = express();
 
+// store todos in an array
+let todos = [];
+
+// setup express middleware
+app.use(express.json());
+
+// routes for the todos
+app.get('/todos', (req, res) => {
+    res.json(todos)
+});
+
+app.post('/todos/create', (req, res) => {
+    const name = req.body.name;
+    const date = req.body.date;
+
+    const data  = {
+        "Title": name,
+        "Due Date": date
+    }
+
+    todos.push(data);
+
+    res.json({
+        "status": "success",
+        "message": "Added todo successfully"
+    })
+
+})
+
+app.put('/todos/update/:title', (req, res) => {
+
+    const title = req.params.title
+    
+    const name = req.body.name
+    const date = req.body.date
+
+    todos = todos.map((value) => {
+
+        if(value.Title === title) {
+            return {
+                "Title": name,
+                "Due Date": date
+            }
+        }else{
+            return value
+        }
+
+    })
+
+    res.json({
+        "status": "success",
+        "message": "Updated todo successfully"
+    })
+
+})
+
+
 app.get('/', (req, res) => {
     res.send('Welcome to your first server application!')
 });
