@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 
 // variable that defines the server
 let app = express();
@@ -6,15 +7,20 @@ let app = express();
 // store todos in an array
 let todos = [];
 
+// url encoder
+var urlEncoder = bodyParser.urlencoded({ extended: false});
+
 // setup express middleware
 app.use(express.json());
+app.use(express.static('public'));
 
 // routes for the todos
 app.get('/todos', (req, res) => {
     res.json(todos)
 });
 
-app.post('/todos/create', (req, res) => {
+app.post('/todos/create', urlEncoder, (req, res) => {
+
     const name = req.body.name;
     const date = req.body.date;
 
@@ -58,6 +64,12 @@ app.put('/todos/update/:title', (req, res) => {
     })
 
 })
+
+app.get('/create_todo', (req, res) => {
+    res.sendFile(__dirname + '/public/views/' + 'index.html');
+});
+
+
 
 
 app.get('/', (req, res) => {
