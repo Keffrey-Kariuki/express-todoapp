@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const db =  require('./db')
 
 // variable that defines the server
 let app = express();
@@ -7,12 +8,20 @@ let app = express();
 // store todos in an array
 let todos = [];
 
+// store ids
+let todosId = 1;
+
 // url encoder
 var urlEncoder = bodyParser.urlencoded({ extended: false});
 
 // setup express middleware
 app.use(express.json());
 app.use(express.static('public'));
+
+// connect to db
+db.testConnection()
+// create table
+db.models.Todo.create();
 
 // routes for the todos
 app.get('/todos', (req, res) => {
@@ -25,6 +34,7 @@ app.post('/todos/create', urlEncoder, (req, res) => {
     const date = req.body.date;
 
     const data  = {
+        "id": todosId++,
         "Title": name,
         "Due Date": date
     }
@@ -67,6 +77,17 @@ app.put('/todos/update/:title', (req, res) => {
 
 app.get('/create_todo', (req, res) => {
     res.sendFile(__dirname + '/public/views/' + 'index.html');
+});
+
+// delete todo
+app.delete('/destroy/:id', (req, res) => {
+
+   todos = todos.filter( (value) => value.id != req.params.id )
+   res.json({
+    status: 'success',
+    message: 'Deleted todo successfully'
+   });
+
 });
 
 
